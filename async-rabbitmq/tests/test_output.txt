@@ -1,0 +1,84 @@
+============================================================
+ Part B – Async RabbitMQ Test Suite
+============================================================
+
+Waiting for order-service...
+Order service is up.
+
+
+============================================================
+TEST 1: Kill inventory, publish orders, restart, observe drain
+============================================================
+
+  Stopping inventory-service...
+  Publishing 15 orders while inventory is down...
+    order 1: 202 -> ORD-1771300361345-874302bf
+    order 2: 202 -> ORD-1771300361479-d4cbd62c
+    order 3: 202 -> ORD-1771300361603-36acfc77
+    order 4: 202 -> ORD-1771300361725-a128ea71
+    order 5: 202 -> ORD-1771300361838-763e6b05
+    order 6: 202 -> ORD-1771300361957-d8649ac4
+    order 7: 202 -> ORD-1771300362077-11e4d447
+    order 8: 202 -> ORD-1771300362197-c1a8a337
+    order 9: 202 -> ORD-1771300362315-ddeab4ab
+    order 10: 202 -> ORD-1771300362436-9bb9ec99
+    order 11: 202 -> ORD-1771300362557-26afe7cd
+    order 12: 202 -> ORD-1771300362675-ff13e28f
+    order 13: 202 -> ORD-1771300362794-0fcf770d
+    order 14: 202 -> ORD-1771300362911-e7ed5739
+    order 15: 202 -> ORD-1771300363027-3d6f427e
+
+  Queue depth (inventory_orders): 15
+  Messages are queued in RabbitMQ waiting for a consumer.
+
+  Restarting inventory-service...
+  Watching backlog drain...
+    t=  0s  queue depth = 0
+  Backlog fully drained!
+
+  Orders confirmed: 15/15
+
+============================================================
+TEST 2: Idempotency – duplicate event_id must not double-reserve
+============================================================
+  Published event (attempt 1) with event_id=idempotency-test-12345
+  Published event (attempt 2) with event_id=idempotency-test-12345
+
+  Inventory service logs (last 30 lines):
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300361345-874302bf] reserved 1x pizza (remaining=99)
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300361479-d4cbd62c] reserved 1x pizza (remaining=98)
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300361603-36acfc77] reserved 1x pizza (remaining=97)
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300361725-a128ea71] reserved 1x pizza (remaining=96)
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300361838-763e6b05] reserved 1x pizza (remaining=95)
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300361957-d8649ac4] reserved 1x pizza (remaining=94)
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300362077-11e4d447] reserved 1x pizza (remaining=93)
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300362197-c1a8a337] reserved 1x pizza (remaining=92)
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300362315-ddeab4ab] reserved 1x pizza (remaining=91)
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300362436-9bb9ec99] reserved 1x pizza (remaining=90)
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300362557-26afe7cd] reserved 1x pizza (remaining=89)
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300362675-ff13e28f] reserved 1x pizza (remaining=88)
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300362794-0fcf770d] reserved 1x pizza (remaining=87)
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300362911-e7ed5739] reserved 1x pizza (remaining=86)
+    inventory-service-1  | INFO:inventory_service:[ORD-1771300363027-3d6f427e] reserved 1x pizza (remaining=85)
+    inventory-service-1  | INFO:inventory_service:[ORD-IDEMP-001] reserved 5x soda (remaining=195)
+    inventory-service-1  | WARNING:inventory_service:[ORD-IDEMP-001] duplicate event_id=idempotency-test-12345, skipping (idempotent)
+
+  If inventory only reserved 5 (not 10), idempotency is working.
+  The second message with the same event_id was skipped.
+
+============================================================
+TEST 3: DLQ – malformed message goes to dead-letter queue
+============================================================
+  Published malformed (non-JSON) message.
+  Published JSON with missing required fields.
+
+  DLQ depth (orders_dlq): 2
+  Both poison messages should be in the dead-letter queue.
+
+  Inventory logs (malformed handling):
+    inventory-service-1  | ERROR:inventory_service:malformed message, sending to DLQ: b'THIS IS NOT JSON {{{corrupted'
+    inventory-service-1  | ERROR:inventory_service:[unknown] missing required fields, nack to DLQ
+
+============================================================
+ All Part B tests completed.
+============================================================

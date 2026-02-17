@@ -1,0 +1,31 @@
+services:
+  order-service:
+    build:
+      context: ..
+      dockerfile: sync-rest/order_service/Dockerfile
+    ports:
+      - "6000:5000"
+    environment:
+      - INVENTORY_URL=http://inventory-service:5001
+      - NOTIFICATION_URL=http://notification-service:5002
+      - REQUEST_TIMEOUT=5
+    depends_on:
+      - inventory-service
+      - notification-service
+
+  inventory-service:
+    build:
+      context: ..
+      dockerfile: sync-rest/inventory_service/Dockerfile
+    ports:
+      - "6001:5001"
+    environment:
+      - SIMULATED_DELAY=0
+      - FORCE_FAILURE=false
+
+  notification-service:
+    build:
+      context: ..
+      dockerfile: sync-rest/notification_service/Dockerfile
+    ports:
+      - "6002:5002"

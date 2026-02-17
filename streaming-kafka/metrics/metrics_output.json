@@ -1,0 +1,14 @@
+{
+  "total_orders_seen": 10000,
+  "total_reserved": 8976,
+  "total_failed": 1024,
+  "duration_minutes": 1,
+  "avg_orders_per_minute": 10000.0,
+  "failure_rate_percent": 10.24,
+  "orders_per_minute_buckets": {
+    "1771300380": 10000
+  },
+  "failures_per_minute_buckets": {
+    "1771300380": 1024
+  }
+}

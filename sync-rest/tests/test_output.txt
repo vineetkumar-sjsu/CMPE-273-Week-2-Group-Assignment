@@ -1,0 +1,89 @@
+============================================================
+ Part A – Synchronous REST Test Suite
+============================================================
+
+Waiting for services to be ready...
+
+============================================================
+TEST 1: Baseline latency (20 requests, no injected delay)
+============================================================
+  req   1  | 201 | confirmed  |    35.2 ms
+  req   2  | 201 | confirmed  |    13.0 ms
+  req   3  | 201 | confirmed  |     7.9 ms
+  req   4  | 201 | confirmed  |     9.0 ms
+  req   5  | 201 | confirmed  |     6.8 ms
+  req   6  | 201 | confirmed  |     8.5 ms
+  req   7  | 201 | confirmed  |     6.9 ms
+  req   8  | 201 | confirmed  |     9.6 ms
+  req   9  | 201 | confirmed  |     7.2 ms
+  req  10  | 201 | confirmed  |     7.5 ms
+  req  11  | 201 | confirmed  |     7.8 ms
+  req  12  | 201 | confirmed  |     6.9 ms
+  req  13  | 201 | confirmed  |     6.5 ms
+  req  14  | 201 | confirmed  |     6.6 ms
+  req  15  | 201 | confirmed  |     6.4 ms
+  req  16  | 201 | confirmed  |     7.2 ms
+  req  17  | 201 | confirmed  |     7.2 ms
+  req  18  | 201 | confirmed  |     7.0 ms
+  req  19  | 201 | confirmed  |     7.0 ms
+  req  20  | 201 | confirmed  |    12.7 ms
+
+  --- Summary ---
+  min    =     6.4 ms
+  max    =    35.2 ms
+  mean   =     9.3 ms
+  median =     7.2 ms
+  stdev  =     6.4 ms
+
+============================================================
+TEST 2: 2s delay injected into Inventory Service
+============================================================
+  Recreating inventory-service with SIMULATED_DELAY=2 ...
+  req   1  | 201 | confirmed  |  2058.7 ms
+  req   2  | 201 | confirmed  |  2032.8 ms
+  req   3  | 201 | confirmed  |  2023.7 ms
+  req   4  | 201 | confirmed  |  2021.4 ms
+  req   5  | 201 | confirmed  |  2019.5 ms
+  req   6  | 201 | confirmed  |  2025.7 ms
+  req   7  | 201 | confirmed  |  2014.9 ms
+  req   8  | 201 | confirmed  |  2021.2 ms
+  req   9  | 201 | confirmed  |  2019.5 ms
+  req  10  | 201 | confirmed  |  2020.7 ms
+
+  --- Summary (with 2s delay) ---
+  min    =  2014.9 ms
+  max    =  2058.7 ms
+  mean   =  2025.8 ms
+  median =  2021.3 ms
+
+============================================================
+TEST 3: Inventory forced failure (FORCE_FAILURE=true)
+============================================================
+  req   1  | HTTP 422 | failed     | reason=service_error |    26.2 ms
+  req   2  | HTTP 422 | failed     | reason=service_error |     7.9 ms
+  req   3  | HTTP 422 | failed     | reason=service_error |     6.4 ms
+  req   4  | HTTP 422 | failed     | reason=service_error |     7.2 ms
+  req   5  | HTTP 422 | failed     | reason=service_error |     7.5 ms
+
+============================================================
+TEST 4: Inventory service completely down (timeout + error)
+============================================================
+  Stopping inventory-service ...
+  req   1  | HTTP 503 | failed     | reason=inventory_unavailable |    44.8 ms
+  req   2  | HTTP 503 | failed     | reason=inventory_unavailable |     8.8 ms
+  req   3  | HTTP 503 | failed     | reason=inventory_unavailable |     8.3 ms
+  Restarting inventory-service ...
+
+============================================================
+LATENCY COMPARISON TABLE
+============================================================
+  Scenario                       |  Mean (ms) |  Median (ms)
+  ------------------------------ | ---------- | ------------
+  Baseline (no delay)            |        9.3 |          7.2
+  2s inventory delay             |     2025.8 |       2021.3
+
+  Δ mean = 2016.5 ms
+  The ~2000 ms increase matches the injected delay because
+  the synchronous call blocks the entire request pipeline.
+  OrderService cannot return until Inventory responds.
+

@@ -1,0 +1,67 @@
+============================================================
+ Kafka Replay Evidence – Before and After
+============================================================
+
+This file documents two consecutive replay runs of the analytics
+consumer. Each run uses a fresh consumer group with
+auto_offset_reset=earliest, reading all events from the start
+of the OrderEvents and InventoryEvents topics.
+
+============================================================
+ REPLAY RUN 1 (consumer group: analytics-group-replay-1771300498)
+============================================================
+
+INFO:analytics_consumer:analytics_consumer started (replay=True, group=analytics-group-replay-1771300498)
+INFO:analytics_consumer:[live] orders=1000 reserved=0 failed=0 opm=1000.0 fail%=0
+INFO:analytics_consumer:[live] orders=2000 reserved=0 failed=0 opm=2000.0 fail%=0
+INFO:analytics_consumer:[live] orders=3000 reserved=0 failed=0 opm=3000.0 fail%=0
+INFO:analytics_consumer:[live] orders=4000 reserved=0 failed=0 opm=4000.0 fail%=0
+INFO:analytics_consumer:[live] orders=10000 reserved=8976 failed=1024 opm=10000.0 fail%=10.24
+INFO:analytics_consumer:replay: no more records, finishing
+INFO:analytics_consumer:metrics report saved to /data/metrics_output.json
+INFO:analytics_consumer:=== FINAL METRICS REPORT ===
+INFO:analytics_consumer:  total_orders_seen: 10000
+INFO:analytics_consumer:  total_reserved: 8976
+INFO:analytics_consumer:  total_failed: 1024
+INFO:analytics_consumer:  duration_minutes: 1
+INFO:analytics_consumer:  avg_orders_per_minute: 10000.0
+INFO:analytics_consumer:  failure_rate_percent: 10.24
+
+============================================================
+ REPLAY RUN 2 (consumer group: analytics-group-replay-1771300537)
+============================================================
+
+INFO:analytics_consumer:analytics_consumer started (replay=True, group=analytics-group-replay-1771300537)
+INFO:analytics_consumer:[live] orders=1000 reserved=0 failed=0 opm=1000.0 fail%=0
+INFO:analytics_consumer:[live] orders=2000 reserved=0 failed=0 opm=2000.0 fail%=0
+INFO:analytics_consumer:[live] orders=3000 reserved=0 failed=0 opm=3000.0 fail%=0
+INFO:analytics_consumer:[live] orders=4000 reserved=0 failed=0 opm=4000.0 fail%=0
+INFO:analytics_consumer:[live] orders=10000 reserved=8976 failed=1024 opm=10000.0 fail%=10.24
+INFO:analytics_consumer:replay: no more records, finishing
+INFO:analytics_consumer:metrics report saved to /data/metrics_output.json
+INFO:analytics_consumer:=== FINAL METRICS REPORT ===
+INFO:analytics_consumer:  total_orders_seen: 10000
+INFO:analytics_consumer:  total_reserved: 8976
+INFO:analytics_consumer:  total_failed: 1024
+INFO:analytics_consumer:  duration_minutes: 1
+INFO:analytics_consumer:  avg_orders_per_minute: 10000.0
+INFO:analytics_consumer:  failure_rate_percent: 10.24
+
+============================================================
+ COMPARISON
+============================================================
+
+  Metric                  | Run 1     | Run 2
+  ------------------------|-----------|----------
+  total_orders_seen       | 10000     | 10000
+  total_reserved          | 8976      | 8976
+  total_failed            | 1024      | 1024
+  avg_orders_per_minute   | 10000.0   | 10000.0
+  failure_rate_percent    | 10.24     | 10.24
+
+  Result: CONSISTENT – both replays produce identical metrics.
+
+  Kafka retains events on disk (unlike RabbitMQ which deletes on ACK),
+  so replaying from offset 0 always reads the same event log. Since the
+  analytics computation is deterministic (counting + rate calculation),
+  the output is identical across replays.

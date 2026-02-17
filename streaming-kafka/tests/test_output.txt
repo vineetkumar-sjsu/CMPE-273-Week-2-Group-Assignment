@@ -1,0 +1,57 @@
+============================================================
+ Part C – Kafka Streaming Test Suite
+============================================================
+  Waiting for producer service...
+  Producer is ready.
+
+============================================================
+TEST 1: Produce 10,000 events
+============================================================
+  Published: 10000 events in 0.9s
+  Fail rate injected: 10%
+
+  Waiting 20s for consumers to process...
+
+============================================================
+TEST 2: Consumer lag
+============================================================
+  inventory-group lag:
+    GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                             HOST            CLIENT-ID
+    inventory-group OrderEvents     0          10000           10000           0               kafka-python-2.2.2-8ebcf2f7-b77d-4003-bf5d-904f2391570b /172.20.0.4     kafka-python-2.2.2
+
+  analytics-group lag:
+    GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                             HOST            CLIENT-ID
+    analytics-group InventoryEvents 0          10000           10000           0               kafka-python-2.2.2-f6d60c71-a900-4c49-a81c-a524520f307e /172.20.0.6     kafka-python-2.2.2
+    analytics-group OrderEvents     0          10000           10000           0               kafka-python-2.2.2-f6d60c71-a900-4c49-a81c-a524520f307e /172.20.0.6     kafka-python-2.2.2
+
+============================================================
+TEST 3: Replay – new consumer group reads from beginning
+============================================================
+  BEFORE replay (live metrics):
+    total_orders_seen: 10000
+    total_reserved: 8976
+    total_failed: 1024
+    duration_minutes: 1
+    avg_orders_per_minute: 10000.0
+    failure_rate_percent: 10.24
+
+  Running replay (new consumer group, offset=earliest)...
+
+  AFTER replay (recomputed metrics):
+    total_orders_seen: 10000
+    total_reserved: 8976
+    total_failed: 1024
+    duration_minutes: 1
+    avg_orders_per_minute: 10000.0
+    failure_rate_percent: 10.24
+
+  Comparison (before vs after replay):
+    total_orders:    10000  |   10000
+    total_reserved:   8976  |    8976
+    total_failed:     1024  |    1024
+    failure_rate:    10.2%  |   10.2%
+    ==> Replay produced CONSISTENT metrics.
+
+============================================================
+ All Part C tests completed.
+============================================================
