@@ -1,4 +1,4 @@
-# CMPE 273 – Assignment 2: Communication Models Lab
+# CMPE 273 – Group Assignment - Week 2
 
 **Campus Food Ordering System** implemented using three communication patterns:
 
