@@ -57,11 +57,11 @@ cmpe273-comm-models-lab/
 
 | Part | File | Description |
 |------|------|-------------|
-| A | [sync-rest/tests/test_output.txt](sync-rest/tests/test_output.txt) | Full test run output with all latency measurements |
-| B | [async-rabbitmq/tests/test_output.txt](async-rabbitmq/tests/test_output.txt) | Full test run output showing backlog drain, idempotency, and DLQ |
-| C | [streaming-kafka/tests/test_output.txt](streaming-kafka/tests/test_output.txt) | Full test run output with 10k events, consumer lag, and replay |
-| C | [streaming-kafka/tests/replay_evidence.txt](streaming-kafka/tests/replay_evidence.txt) | Side-by-side replay comparison proving consistent metrics |
-| C | [streaming-kafka/metrics/metrics_output.json](streaming-kafka/metrics/metrics_output.json) | Computed analytics metrics (orders per minute, failure rate) |
+| A | [sync-rest/tests/test_output.txt](../sync-rest/tests/test_output.txt) | Full test run output with all latency measurements |
+| B | [async-rabbitmq/tests/test_output.txt](../async-rabbitmq/tests/test_output.txt) | Full test run output showing backlog drain, idempotency, and DLQ |
+| C | [streaming-kafka/tests/test_output.txt](../streaming-kafka/tests/test_output.txt) | Full test run output with 10k events, consumer lag, and replay |
+| C | [streaming-kafka/tests/replay_evidence.txt](../streaming-kafka/tests/replay_evidence.txt) | Side-by-side replay comparison proving consistent metrics |
+| C | [streaming-kafka/metrics/metrics_output.json](../streaming-kafka/metrics/metrics_output.json) | Computed analytics metrics (orders per minute, failure rate) |
 
 ## Prerequisites
 
@@ -102,7 +102,7 @@ cd sync-rest/
 python tests/test_sync.py
 ```
 
-Full output: [sync-rest/tests/test_output.txt](sync-rest/tests/test_output.txt)
+Full output: [sync-rest/tests/test_output.txt](../sync-rest/tests/test_output.txt)
 
 ### Test Results
 
@@ -237,7 +237,7 @@ cd async-rabbitmq/
 python tests/test_async.py
 ```
 
-Full output: [async-rabbitmq/tests/test_output.txt](async-rabbitmq/tests/test_output.txt)
+Full output: [async-rabbitmq/tests/test_output.txt](../async-rabbitmq/tests/test_output.txt)
 
 ### Test Results
 
@@ -365,9 +365,9 @@ cd streaming-kafka/
 python tests/test_streaming.py
 ```
 
-Full output: [streaming-kafka/tests/test_output.txt](streaming-kafka/tests/test_output.txt)
+Full output: [streaming-kafka/tests/test_output.txt](../streaming-kafka/tests/test_output.txt)
 
-Replay evidence: [streaming-kafka/tests/replay_evidence.txt](streaming-kafka/tests/replay_evidence.txt)
+Replay evidence: [streaming-kafka/tests/replay_evidence.txt](../streaming-kafka/tests/replay_evidence.txt)
 
 ### Test Results
 
@@ -431,11 +431,11 @@ Comparison:
 
 **Replay produced CONSISTENT metrics.** Each replay uses a fresh consumer group (`analytics-group-replay-<timestamp>`) with `auto_offset_reset=earliest`, which forces it to read all events from offset 0. Since Kafka retains events on disk (unlike RabbitMQ which deletes consumed messages), we can recompute the exact same metrics from the same event stream. The numbers match because the input data is immutable and the analytics computation is deterministic — the same events always produce the same counts and rates.
 
-Full replay evidence with logs: [streaming-kafka/tests/replay_evidence.txt](streaming-kafka/tests/replay_evidence.txt)
+Full replay evidence with logs: [streaming-kafka/tests/replay_evidence.txt](../streaming-kafka/tests/replay_evidence.txt)
 
 ### Metrics Output
 
-The metrics report is written to [`streaming-kafka/metrics/metrics_output.json`](streaming-kafka/metrics/metrics_output.json):
+The metrics report is written to [`streaming-kafka/metrics/metrics_output.json`](../streaming-kafka/metrics/metrics_output.json):
 
 ```json
 {
