@@ -1,3 +1,16 @@
+"""
+Shared ID generators used by all three communication models (sync REST,
+async RabbitMQ, and streaming Kafka).
+
+generate_order_id()  - Produces a timestamped order ID (e.g. ORD-1707000000000-a1b2c3d4)
+                       that is roughly time-sortable and globally unique.
+generate_event_id()  - Produces a hex UUID suitable for message deduplication
+                       and distributed tracing.
+
+Each service copies or mounts this module to keep ID formats consistent
+across every implementation.
+"""
+
 import uuid
 import time
 
